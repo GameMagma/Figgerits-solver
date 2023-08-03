@@ -74,7 +74,6 @@ def fix_pattern(pattern: list) -> list:
     return [mapping[num] for num in pattern]
 
 
-# TODO: Allow user to enter letters into the key so that the program can find a solution
 def find_solution(blanks, nums):
     """
     This method uses the list of words that have already been solved and the numbers that have been found using the
@@ -102,3 +101,8 @@ if __name__ == '__main__':
         # print(f"Final letter key: {letter_key}")  # Not implemented yet
     else:
         exit(0)
+
+# TODO: Allow user to enter letters into the key so that the program can find a solution
+# TODO: Have program utilize key to further rule out impossible words
+# TODO: Allow user to enter letters in addition to numbers to rule out words For example: Word is "test", you have "T",
+    # TODO: ^ then you would enter "T 2 3 T" and program would rule
