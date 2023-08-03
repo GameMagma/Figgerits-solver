@@ -1,37 +1,59 @@
 import nltk
 from nltk.corpus import words
 
-nltk.download('words')
-word_list = words.words()
+nltk.download('words')     # Download English dictionary
+word_list = words.words()  # Assign English dictionary to word_list
 
+# The full letter-to-number key
 letter_key = {1: '', 2: '', 3: '', 4: '', 5: '', 6: '', 7: '', 8: '', 9: '', 10: '', 11: '', 12: '', 13: '', 14: '',
               15: '', 16: '', 17: '', 18: '', 19: '', 20: '', 21: '', 22: '', 23: '', 24: '', 25: '', 26: ''}
 
 
-def find_word(nums: list) -> list:
+def find_word(pattern: list) -> list:
     """
     This method uses the blanks and numbers provided to guess what the word could be
 
-    :param nums: The numbers associated with the blanks
+    :param pattern: The numbers associated with the blanks
     :return: The word
     """
 
-    possible_words = [word for word in word_list if (len(nums) == len(word)) and pattern_matcher(word, nums)]
-    print(f"In findWord: {possible_words}")
+    possible_words = [word for word in word_list if (len(pattern) == len(word)) and is_matching(word, pattern)]
+    # print(f"In findWord: {possible_words}")  # Debugging
     return possible_words
 
 
-def pattern_matcher(word, pattern):
+def is_matching(proposed_word, pattern) -> bool:
     """
-    This function checks if a given word matches a given numerical pattern without converting the pattern to sequential numbers.
+    This function checks if a given word matches a given numerical pattern by mapping the word to its own pattern and
+    comparing them.
     For example, "test" matches the pattern [1, 2, 3, 1].
-    :param word: Proposed word to check
+    :param proposed_word: Proposed word to check
     :param pattern: Given pattern
     """
 
-    pattern = fix_pattern(pattern)
+    pattern = fix_pattern(pattern)  # Fix pattern to sequential numbers
+    letter_map = {}                 # Letter is the key, number is the value
+    proposed_word_pattern = []      # The numerical pattern of the proposed word
+    current_letter_num = 1          # Current number
 
-    
+    # Check if the pattern and the words both have the same length
+    if len(pattern) != len(proposed_word):
+        return False
+
+    # Map the word to its own pattern, then return the comparison
+
+    # For every letter in the word,
+    #   Check if the letter is in the map already
+    #       If not, use current_letter_num to assign that letter a number, then increment it
+    #   Add the number to proposed_word_pattern
+    for letter in proposed_word:
+        if letter not in letter_map:
+            letter_map[letter] = current_letter_num
+            current_letter_num += 1
+        proposed_word_pattern.append(letter_map[letter])
+
+    # print(f"Proposed_word_pattern: {proposed_word_pattern} vs. pattern: {pattern}")  # Debugging
+    return proposed_word_pattern == pattern
 
 
 def fix_pattern(pattern: list) -> list:
@@ -52,6 +74,7 @@ def fix_pattern(pattern: list) -> list:
     return [mapping[num] for num in pattern]
 
 
+# TODO: Allow user to enter letters into the key so that the program can find a solution
 def find_solution(blanks, nums):
     """
     This method uses the list of words that have already been solved and the numbers that have been found using the
@@ -75,7 +98,7 @@ if __name__ == '__main__':
         for number in wordNums.split():
             nums.append(int(number))
 
-        print(find_word(nums))
-        print(f"Final letter key: {letter_key}")
+        print(f"Possible words: {find_word(nums)}")  # TODO: make the list print prettier
+        # print(f"Final letter key: {letter_key}")  # Not implemented yet
     else:
         exit(0)
