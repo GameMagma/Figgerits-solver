@@ -1,5 +1,6 @@
 import nltk
 from nltk.corpus import words
+import re
 
 nltk.download('words')     # Download English dictionary
 word_list = words.words()  # Assign English dictionary to word_list
@@ -20,6 +21,18 @@ def find_word(pattern: list) -> list:
     possible_words = [word for word in word_list if (len(pattern) == len(word)) and is_matching(word, pattern)]
     # print(f"In findWord: {possible_words}")  # Debugging
     return possible_words
+
+
+def find_solution(blanks, nums):
+    """
+    This method uses the list of words that have already been solved and the numbers that have been found using the
+    previous methods to find the final solution.
+
+    :param blanks: A list of each group of blanks, consisting of a number of blanks for the solution to the puzzle
+    :param nums: The numbers associated with the blanks
+    :return: The solution
+    """
+    pass
 
 
 def is_matching(proposed_word, pattern) -> bool:
@@ -74,35 +87,60 @@ def fix_pattern(pattern: list) -> list:
     return [mapping[num] for num in pattern]
 
 
-def find_solution(blanks, nums):
+def format_list(input_list: list) -> str:
     """
-    This method uses the list of words that have already been solved and the numbers that have been found using the
-    previous methods to find the final solution.
-
-    :param blanks: A list of each group of blanks, consisting of a number of blanks for the solution to the puzzle
-    :param nums: The numbers associated with the blanks
-    :return: The solution
+    This takes a list and formats it to be a string formatted as a neat, comma-delimited list.
+    :param input_list: The list to format
+    :return: The formatted list
     """
-    pass
+    return ", ".join([str(x) for x in input_list])
 
 
 if __name__ == '__main__':
-    print("Solve for solution or word?")
-    userIn = input().strip().lower()
-    if (userIn == "w") or (userIn == "word"):
-        nums = []
+    flag = True
+    while flag:
+        userIn = input("\nSolve for solution (s), key (k), or word (w)? Enter now: ").strip().lower()
+        # Can't do "w" or "word" with match-case statements, but this is more efficient and nobody but me will use this
+        match userIn:
+            case "w":
+                # Attempt to solve word
+                nums = []  # Variable containing mystery word's pattern
 
-        # Get the letters in the word
-        wordNums = input("\nEnter only the numbers in the order they're shown, separated by spaces: ").strip()
-        for number in wordNums.split():
-            nums.append(int(number))
+                # Get the letters in the word
+                wordNums = input("\nEnter only the numbers in the order they're shown, separated by spaces: ").strip()
+                for number in wordNums.split():
+                    nums.append(int(number))
 
-        print(f"Possible words: {find_word(nums)}")  # TODO: make the list print prettier
-        # print(f"Final letter key: {letter_key}")  # Not implemented yet
-    else:
-        exit(0)
+                results = find_word(nums)
+                print(f"{len(results)} possible words")
+                print(f"Possible words: {format_list(results)}")
+            case "s":
+                # Attempt to solve solution
+                pass
+            case "k":
+                # Enter into key
+                user_in = input(
+                    "Enter a number followed by a space and then the letter it's associated with, separating"
+                    " each entry with commas, like this: 1 a, 2 b, 3 c, 4 d, 5 e. Enter now: ").strip(",. ").lower()
 
-# TODO: Allow user to enter letters into the key so that the program can find a solution
+                key_groups = user_in.split(",")  # Split the string into a list of groups, like ["1 a", "2 b"...]
+
+                # Check to make sure each group follows the regex, then add it to the letter_key. If it doesn't fit,
+                # notify the user and toss it out.
+                for group in key_groups:
+                    group = group.strip()
+                    if re.search('^[0-9]+ [a-z]$', group):
+                        num, char = group.split()    # Split the number and letter into two variables
+                        letter_key[int(num)] = char  # Add the relation to the dictionary
+                    else:
+                        print(f"Group {group} is invalid.")  # Didn't fit the regex. Notify the user and move on.
+
+                print(f"New key: {letter_key}")
+            case _:
+                flag = False
+
+# TODO: Write find_solution (look for each individual word then use AI to check for coherent sentences?)
 # TODO: Have program utilize key to further rule out impossible words
+# TODO: Use AI to look at the clue and the list of possible words to see the most likely candidate(?)
 # TODO: Allow user to enter letters in addition to numbers to rule out words For example: Word is "test", you have "T",
     # TODO: ^ then you would enter "T 2 3 T" and program would rule
